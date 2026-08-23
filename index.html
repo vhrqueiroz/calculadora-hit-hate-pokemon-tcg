@@ -327,29 +327,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   loading.style.display = 'flex';
   
   try {
-    // Supondo que sua api (gasApi.js) possua um wrapper ou que você use google.script.run
-    // Exemplo usando a API nativa do Apps Script para HTML Services:
-    google.script.run
-      .withSuccessHandler(function(isValid) {
-        loading.style.display = 'none';
-        if(isValid) {
-          document.getElementById('loginScreen').style.display = 'none';
-          document.getElementById('homeScreen').style.display = '';
-        } else {
-          errorMsg.textContent = 'Usuário ou senha incorretos.';
-          errorMsg.style.display = 'block';
-        }
-      })
-      .withFailureHandler(function(err) {
-        loading.style.display = 'none';
-        errorMsg.textContent = 'Erro ao conectar com o servidor.';
-        errorMsg.style.display = 'block';
-      })
-      .verificarLogin(user, pass);
-      
+    // Chama a função do gasApi.js em vez do google.script.run
+    const isValid = await loginApp(user, pass);
+    loading.style.display = 'none';
+    
+    if (isValid) {
+      // Se sucesso, esconde a tela de login e mostra a Home
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('homeScreen').style.display = '';
+    } else {
+      // Se falhou
+      errorMsg.textContent = 'Usuário ou senha incorretos.';
+      errorMsg.style.display = 'block';
+    }
   } catch (err) {
     loading.style.display = 'none';
-    errorMsg.textContent = 'Erro na requisição.';
+    errorMsg.textContent = 'Erro na requisição. Verifique sua conexão.';
     errorMsg.style.display = 'block';
   }
 });
