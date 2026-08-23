@@ -18,7 +18,7 @@
  */
 
 // ⚠️  SUBSTITUA pela URL do seu Web App após o deploy no Google Apps Script
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwHqJZqpX3sBqE3W-kSGQlc99ATAdSnjkNjc_K1Q8ng0j3GwFjGlFbPKbfFsUxFLMxO/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzTEAqCZmrjQbEkYWcHI08K_Oae-F5M5NQq4BNm-8w3egjZ1FY4paRjPMiCvQ-P_Hs/exec";
 
 // --------------------------------------------------------------------------
 // 1. LER registros de uma coleção (GET)
@@ -251,45 +251,5 @@ async function loadCollectionData(sheetName, dataArray, renderFn) {
     renderFn();
   } finally {
     setLoading(false);
-  }
-}
-
-// --------------------------------------------------------------------------
-// 6. LOGIN (POST login)
-// --------------------------------------------------------------------------
-
-/**
- * Valida o usuário e senha na planilha.
- */
-async function loginApp(usuario, senha) {
-  const body = {
-    action: "login",
-    usuario: usuario,
-    senha: senha
-  };
-
-  try {
-    const response = await fetch(GAS_WEB_APP_URL, { // Lembre de colar a nova URL lá no topo
-      method: "POST",
-      redirect: "follow",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erro HTTP ${response.status}`);
-    }
-
-    const json = await response.json();
-    
-    // Se o servidor devolver um erro (ex: ação desconhecida, ou aba não encontrada)
-    if (json.error) {
-      alert("ERRO NO SERVIDOR: " + json.error);
-    }
-    
-    return json.success; 
-
-  } catch (err) {
-    throw err;
   }
 }
