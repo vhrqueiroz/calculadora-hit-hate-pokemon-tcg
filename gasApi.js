@@ -18,7 +18,7 @@
  */
 
 // ⚠️  SUBSTITUA pela URL do seu Web App após o deploy no Google Apps Script
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyhdOubtdJUnZuAbFYxQQPj8r06Xe4gSzipEGWR2BS15K1s37QgumNUmQ7eU0Dhi8CX/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwHqJZqpX3sBqE3W-kSGQlc99ATAdSnjkNjc_K1Q8ng0j3GwFjGlFbPKbfFsUxFLMxO/exec";
 
 // --------------------------------------------------------------------------
 // 1. LER registros de uma coleção (GET)
@@ -268,10 +268,8 @@ async function loginApp(usuario, senha) {
     senha: senha
   };
 
-  console.log(`[GAS API] POST login → Tentando acesso...`);
-
   try {
-    const response = await fetch(GAS_WEB_APP_URL, {
+    const response = await fetch(GAS_WEB_APP_URL, { // Lembre de colar a nova URL lá no topo
       method: "POST",
       redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -283,10 +281,15 @@ async function loginApp(usuario, senha) {
     }
 
     const json = await response.json();
-    return json.success; // Retornará true (logado) ou false (erro)
+    
+    // Se o servidor devolver um erro (ex: ação desconhecida, ou aba não encontrada)
+    if (json.error) {
+      alert("ERRO NO SERVIDOR: " + json.error);
+    }
+    
+    return json.success; 
 
   } catch (err) {
-    console.error(`[GAS API] ❌ Falha no login:`, err);
     throw err;
   }
 }
