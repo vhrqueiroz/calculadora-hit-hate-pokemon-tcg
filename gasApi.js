@@ -18,7 +18,7 @@
  */
 
 // ⚠️  SUBSTITUA pela URL do seu Web App após o deploy no Google Apps Script
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzTEAqCZmrjQbEkYWcHI08K_Oae-F5M5NQq4BNm-8w3egjZ1FY4paRjPMiCvQ-P_Hs/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCLxcctfFeAKy2haDUhFHNeYvVjeHYyEFWZ3UKUm5B426zJTY6M5kNZEcuEs8UEVQW/exec";
 
 // --------------------------------------------------------------------------
 // 1. LER registros de uma coleção (GET)
@@ -251,5 +251,44 @@ async function loadCollectionData(sheetName, dataArray, renderFn) {
     renderFn();
   } finally {
     setLoading(false);
+  }
+}
+
+// --------------------------------------------------------------------------
+// 6. LOGIN (POST login)
+// --------------------------------------------------------------------------
+
+/**
+ * Valida o usuário e senha na planilha via GET.
+ * Usamos GET (igual ao getRecords) para evitar o problema de perda do body
+ * nos redirects que o Google Apps Script faz em requisições POST.
+ */
+async function loginApp(usuario, senha) {
+  const url = `${GAS_WEB_APP_URL}?action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`;
+
+  console.log(`[GAS API] GET login → ${url}`);
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    // Se o servidor devolver um erro estruturado
+    if (json.error) {
+      alert("ERRO NO SERVIDOR: " + json.error);
+    }
+
+    return json.success;
+
+  } catch (err) {
+    console.error("[GAS API] ❌ Falha no login:", err);
+    throw err;
   }
 }
